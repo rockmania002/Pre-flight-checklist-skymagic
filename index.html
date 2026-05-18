@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141416">
+<title>SKYMAGIC · Pre-Flight Checks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Saira:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#141416; --bg2:#1d1d20; --bg3:#27272b;
+    --line:#343438; --line2:#444;
+    --text:#f4f4f5; --dim:#9a9aa2; --faint:#6a6a72;
+    --go:#34d977; --go-dim:rgba(52,217,119,.13); --go-line:rgba(52,217,119,.4);
+    --amber:#f0a93b; --red:#f0563b;
+    --shadow:0 6px 22px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(900px 480px at 50% -8%, rgba(52,217,119,.06), transparent 70%),
+      linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    background-size:auto, 38px 38px, 38px 38px;
+    color:var(--text);
+    font-family:'Saira',-apple-system,sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:140px;
+  }
+  .wrap{max-width:660px;margin:0 auto;padding:0 14px;}
+
+  /* ---------- header ---------- */
+  header{padding:26px 0 16px;}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .mark{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;
+    font-size:26px;letter-spacing:.34em;color:#fff;
+    padding-right:0;
+  }
+  .mark .tm{font-size:11px;letter-spacing:0;vertical-align:super;color:var(--faint);}
+  .newbtn{
+    background:var(--bg3);border:1px solid var(--line);color:var(--dim);
+    font-family:'Saira',sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;
+    padding:8px 13px;border-radius:8px;cursor:pointer;
+  }
+  .newbtn:active{background:var(--bg2);}
+  .title{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;
+    font-size:38px;line-height:1;letter-spacing:.02em;margin:14px 0 6px;
+    text-transform:uppercase;
+  }
+  .sub{color:var(--dim);font-size:13.5px;font-weight:300;max-width:480px;}
+
+  /* ---------- card / section shell ---------- */
+  .block{margin-top:18px;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+  .secthead{
+    background:#000;color:#fff;padding:13px 16px;
+    display:flex;align-items:center;gap:12px;cursor:pointer;
+    border-bottom:2px solid var(--go);
+    position:relative;
+  }
+  .secthead .name{
+    font-family:'Saira Condensed',sans-serif;font-weight:700;
+    font-size:18px;letter-spacing:.13em;text-transform:uppercase;
+    flex:1;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;
+  }
+  .pill{
+    font-family:'Saira',sans-serif;font-weight:600;font-size:12px;
+    padding:4px 9px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;
+    background:var(--bg3);color:var(--dim);border:1px solid var(--line);
+  }
+  .pill.done{background:var(--go-dim);color:var(--go);border-color:var(--go-line);}
+  .chev{transition:transform .2s;font-size:13px;color:var(--dim);}
+  .block.collapsed .chev{transform:rotate(-90deg);}
+  .block.collapsed .secbody{display:none;}
+  .secbody{background:var(--bg2);padding:10px;}
+
+  .checkall{
+    width:100%;background:var(--bg3);border:1px dashed var(--line2);
+    color:var(--dim);font-family:'Saira',sans-serif;font-weight:600;
+    font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px;border-radius:9px;cursor:pointer;margin-top:2px;
+  }
+  .checkall:active{background:var(--bg);}
+
+  /* ---------- check item ---------- */
+  .item{
+    background:var(--bg);border:1px solid var(--line);
+    border-left:3px solid var(--line);
+    border-radius:10px;padding:13px 14px;margin-bottom:9px;
+    transition:border-color .15s,background .15s;
+  }
+  .item.tappable{cursor:pointer;}
+  .item.on{border-left-color:var(--go);background:linear-gradient(90deg,var(--go-dim),transparent 60%);}
+  .item .q{font-size:15.5px;font-weight:500;line-height:1.32;}
+  .item .q .star{color:var(--red);font-weight:700;margin-left:3px;}
+  .item .opt{
+    display:inline-block;font-size:10px;font-weight:600;letter-spacing:.1em;
+    color:var(--faint);border:1px solid var(--line);border-radius:4px;
+    padding:1px 6px;margin-left:6px;vertical-align:1.5px;
+  }
+  .item .desc{color:var(--dim);font-size:12.5px;font-weight:300;margin-top:3px;line-height:1.4;}
+
+  .toggle{display:flex;align-items:center;gap:11px;margin-top:11px;}
+  .box{
+    width:30px;height:30px;flex:none;border-radius:7px;
+    border:2px solid var(--line2);background:var(--bg3);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s;
+  }
+  .box svg{width:17px;height:17px;opacity:0;transform:scale(.5);transition:all .15s;}
+  .item.on .box{background:var(--go);border-color:var(--go);}
+  .item.on .box svg{opacity:1;transform:scale(1);}
+  .toglabel{
+    font-family:'Saira',sans-serif;font-weight:600;font-size:12.5px;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--faint);
+  }
+  .item.on .toglabel{color:var(--go);}
+
+  /* ---------- radio / scale / text controls ---------- */
+  .radios{display:flex;flex-direction:column;gap:8px;margin-top:11px;}
+  .radio{
+    display:flex;align-items:center;gap:11px;padding:10px 12px;
+    border:1px solid var(--line);border-radius:9px;background:var(--bg3);cursor:pointer;
+  }
+  .radio .dot{
+    width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .radio.sel{border-color:var(--go-line);background:var(--go-dim);}
+  .radio.sel .dot{border-color:var(--go);}
+  .radio.sel .dot::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--go);}
+  .radio span{font-size:14.5px;font-weight:500;}
+
+  .scalewrap{margin-top:12px;}
+  .scalebtns{display:flex;flex-wrap:wrap;gap:7px;}
+  .sb{
+    width:42px;height:42px;border-radius:9px;border:1px solid var(--line);
+    background:var(--bg3);color:var(--text);font-family:'Saira',sans-serif;
+    font-weight:600;font-size:15px;cursor:pointer;
+  }
+  .sb.sel{background:var(--go);border-color:var(--go);color:#06210f;font-weight:700;}
+  .scaleends{display:flex;justify-content:space-between;margin-top:7px;
+    font-size:10.5px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;}
+
+  .tinput{
+    width:100%;margin-top:11px;background:var(--bg3);border:1px solid var(--line);
+    color:var(--text);font-family:'Saira',sans-serif;font-size:15px;
+    padding:11px 12px;border-radius:9px;
+  }
+  .tinput:focus{outline:none;border-color:var(--go-line);background:var(--bg);}
+
+  /* ---------- flight details ---------- */
+  .field{margin-bottom:13px;}
+  .field:last-child{margin-bottom:2px;}
+  .lab{
+    display:block;font-size:11px;font-weight:600;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:6px;
+  }
+  .lab .star{color:var(--red);margin-left:3px;}
+  .field input,.field select{
+    width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--text);
+    font-family:'Saira',sans-serif;font-size:15.5px;padding:11px 12px;border-radius:9px;
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--go-line);background:var(--bg);}
+  .field input.miss,.field select.miss{border-color:var(--red);}
+  .seg{display:flex;gap:7px;}
+  .seg button{
+    flex:1;background:var(--bg3);border:1px solid var(--line);color:var(--dim);
+    font-family:'Saira',sans-serif;font-weight:600;font-size:13px;
+    padding:11px 4px;border-radius:9px;cursor:pointer;letter-spacing:.03em;
+  }
+  .seg button.sel{background:var(--go);border-color:var(--go);color:#06210f;}
+
+  /* ---------- project panel ---------- */
+  .pill.req{background:rgba(240,169,59,.13);color:var(--amber);border-color:rgba(240,169,59,.4);}
+  .setproj{
+    width:100%;background:var(--go);border:none;color:#06210f;
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:15px;
+    letter-spacing:.09em;text-transform:uppercase;padding:12px;border-radius:9px;
+    cursor:pointer;margin-top:4px;
+  }
+  .setproj:active{filter:brightness(.92);}
+  .projhint{color:var(--faint);font-size:11.5px;font-weight:300;margin-top:10px;
+    line-height:1.5;text-align:center;}
+  .prow{
+    display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+    padding:11px 13px;background:var(--bg);border:1px solid var(--line);
+    border-left:3px solid var(--go);border-radius:9px;margin-bottom:8px;
+  }
+  .prow .plab{
+    font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--dim);white-space:nowrap;
+  }
+  .prow .pval{font-size:15.5px;font-weight:500;text-align:right;}
+  .prow .pval.empty{color:var(--faint);font-weight:300;}
+
+  /* ---------- footer ---------- */
+  .footer{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;
+    background:rgba(20,20,22,.96);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:11px 14px calc(11px + env(safe-area-inset-bottom));
+  }
+  .footer .inner{max-width:660px;margin:0 auto;}
+  .bar{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:9px;}
+  .bar i{display:block;height:100%;width:0;background:var(--amber);transition:width .25s,background .25s;}
+  .footrow{display:flex;align-items:center;gap:12px;}
+  .status{font-size:12.5px;font-weight:600;letter-spacing:.05em;color:var(--dim);flex:1;}
+  .status b{color:var(--text);}
+  .submit{
+    background:var(--bg3);border:1px solid var(--line2);color:var(--faint);
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:17px;
+    letter-spacing:.1em;text-transform:uppercase;padding:13px 22px;border-radius:10px;
+    cursor:not-allowed;white-space:nowrap;
+  }
+  .submit.ready{background:var(--go);border-color:var(--go);color:#06210f;cursor:pointer;
+    box-shadow:0 0 22px rgba(52,217,119,.32);}
+  .ready .bar i{background:var(--go);}
+
+  /* ---------- overlay ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:60;background:rgba(8,8,9,.86);
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+    max-width:440px;width:100%;padding:26px 22px;text-align:center;box-shadow:var(--shadow);
+  }
+  .modal .big{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:25px;
+    text-transform:uppercase;letter-spacing:.04em;margin:14px 0 8px;
+  }
+  .modal p{color:var(--dim);font-size:14px;line-height:1.5;margin:0 0 8px;}
+  .modal .mbtn{
+    margin-top:16px;width:100%;background:var(--go);border:none;color:#06210f;
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:16px;
+    letter-spacing:.08em;text-transform:uppercase;padding:13px;border-radius:10px;cursor:pointer;
+  }
+  .modal .mbtn.ghost{background:var(--bg3);color:var(--dim);border:1px solid var(--line);margin-top:9px;}
+  .circle{
+    width:74px;height:74px;border-radius:50%;margin:0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--go-dim);border:2px solid var(--go);
+  }
+  .circle.warn{background:rgba(240,169,59,.13);border-color:var(--amber);}
+  .circle.warn svg{stroke:var(--amber);}
+  .summary{
+    text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+    padding:12px;margin-top:14px;font-size:12.5px;color:var(--dim);max-height:170px;overflow:auto;
+  }
+  .summary div{margin:2px 0;}
+  .summary b{color:var(--text);font-weight:600;}
+  .spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--go);
+    border-radius:50%;animation:sp 1s linear infinite;margin:6px auto;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .foot-note{text-align:center;color:var(--faint);font-size:11px;margin:22px 0 6px;font-weight:300;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brandrow">
+      <div class="brand"><span class="mark">SKYMAGIC<span class="tm">™</span></span></div>
+      <button class="newbtn" id="newBtn">↻ NEW FLIGHT</button>
+    </div>
+    <div class="title">Pre-Flight Checks</div>
+    <div class="sub">Recording pre-flight checks for every flight including tests / rehearsals. To be completed with pilot consultation.</div>
+  </header>
+
+  <!-- PROJECT — sticky across all flights -->
+  <div class="block" id="projectBlock">
+    <div class="secthead">
+      <span class="name">Project</span>
+      <span class="pill" id="projPill">SET REQUIRED</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="secbody">
+      <div id="projLocked" style="display:none">
+        <div class="prow"><span class="plab">Show / Location</span><span class="pval" id="pvShow"></span></div>
+        <div class="prow"><span class="plab">Observer</span><span class="pval" id="pvObs"></span></div>
+        <button class="checkall" id="projChange">↻ Change / Switch Project</button>
+      </div>
+      <div id="projEdit">
+        <div class="field">
+          <label class="lab">Show Name / Location<span class="star">*</span></label>
+          <input type="text" id="f_show" placeholder="e.g. Marina Bay NYE Show" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="lab">Observer Name <span class="opt" style="vertical-align:0">Optional</span></label>
+          <input type="text" id="f_obs" placeholder="Observer name" autocomplete="off">
+        </div>
+        <button class="setproj" id="projSet">✓ Set Project</button>
+        <div class="projhint">Set once — carries across every flight in this project. "New Flight" won't reset it. Tap Change when you move to a new project.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLIGHT DETAILS — per flight -->
+  <div class="block" id="detailsBlock">
+    <div class="secthead">
+      <span class="name">Flight Details</span>
+      <span class="pill" id="detPill">0 / 4</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="secbody">
+      <div class="field">
+        <label class="lab">Date<span class="star">*</span></label>
+        <input type="date" id="f_date">
+      </div>
+      <div class="field">
+        <label class="lab">Take-off Time<span class="star">*</span></label>
+        <input type="time" id="f_time">
+      </div>
+      <div class="field">
+        <label class="lab">Pilot In Command<span class="star">*</span></label>
+        <select id="f_pilot">
+          <option value="">Choose…</option>
+          <option>Soon Hooi Chiew</option>
+          <option>Hazeeq</option>
+          <option>Stuart Fairhurst</option>
+          <option>Mirza</option>
+          <option>Hamkah</option>
+          <option>Tony Smith</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lab">Flight Type<span class="star">*</span></label>
+        <div class="seg" id="f_type">
+          <button data-v="Test">Test</button>
+          <button data-v="Rehearsal">Rehearsal</button>
+          <button data-v="Show / Performance">Show / Perf.</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sections"></div>
+
+  <div class="foot-note">SKYMAGIC Pre-Flight Tool · self-contained · works offline once loaded</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="inner">
+    <div class="bar"><i id="progBar"></i></div>
+    <div class="footrow">
+      <div class="status" id="status">— required checks complete</div>
+      <button class="submit" id="submitBtn">Submit Pre-Flight</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+/* ============================================================
+   SKYMAGIC PRE-FLIGHT CHECKS
+   ------------------------------------------------------------
+   SUBMISSION SETUP  —  fill ENTRY when the pre-filled link is known.
+   While entry IDs are "PENDING", Submit validates the checklist
+   and shows a setup notice instead of posting.
+   ============================================================ */
+const FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSfclEJzfWWfum1oVnG_eH9mo5crqQR8SyaFtv06pzVCM14qvw/formResponse";
+
+const ENTRY = {
+  show:"entry.765251726", date:"entry.1352575892", time:"entry.356583616",
+  pilot:"entry.1505527836", observer:"entry.356433085", flightType:"entry.860938862",
+  s1:"entry.113084722",  s2:"entry.328986028",  s3:"entry.352525520",  s4:"entry.2011733516",
+  s5:"entry.1079475787", s6:"entry.1108335537", s7:"entry.1038199105", s8:"entry.482514001",
+  s9:"entry.221664066",  s10:"entry.1576156008",s11:"entry.1401740264",s12:"entry.574612169",
+  s13:"entry.1232633127",s14:"entry.1360907136",s15:"entry.327463906", s16:"entry.1774411532",
+  s17:"entry.228953627",
+  c1:"entry.447012939",  c2:"entry.1187811411", c3:"entry.413155956",  c4:"entry.1366249258",
+  c5:"entry.1132921455", c6:"entry.1009141943", c7:"entry.1627932880", c8:"entry.455504318",
+  t1:"entry.917732089",  t2:"entry.147610142",  t3:"entry.439714641",  t4:"entry.1708811350",
+  t5:"entry.1041122262", t6:"entry.1823622981", t7:"entry.1744270266", t8:"entry.2056698881",
+  t9:"entry.2049763013", t10:"entry.1309151971",t11:"entry.883282338", t12:"entry.419389148",
+  t13:"entry.956790675", t14:"entry.2098578546",
+};
+/* ============================================================ */
+
+/* ---- form definition (from the live Google Form) ---- */
+const SECTIONS = [
+  { key:"setup", name:"Setup Check", items:[
+    {id:"s1", q:"Visual inspection of UAS vehicles", desc:"Including batteries, propellers, airframe, motors and payload.", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s2", q:"Visual inspection of GCS equipment", desc:"Including computers, cables, connections, power supplies and monitoring equipment.", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s3", q:"Drone & RTK Board Firmware Version Current", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s4", q:"Trajectory Directory (TJ &amp; TC ) Correct", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s5", q:"Show Configuration (CFG) Correct", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s6", q:"Geofence Boundary Correct", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s7", q:"Primary Geofence Setting", type:"radio", options:["Return To Home","Atti Land"], def:"Return To Home", req:false},
+    {id:"s8", q:"Secondary Geofence Set to KILL", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s9", q:"TOLZ Layout Config Correct", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s10", q:"TOLZ Layout Yaw Parameter", label:"CHECKED & CORRECT", req:true},
+    {id:"s11", q:"Show Origin Correct", label:"CHECKED & CORRECT", req:true},
+    {id:"s12", q:"Formation Offset Settings Correct", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s13", q:"GCS Laptop Charged & Powered", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s14", q:"Backup GCS Laptop Charged & Powered", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s15", q:"GCS RF Module Powered (27-28V)", label:"CHECKED + CONFIRMED", req:true},
+    {id:"s16", q:"Co-Pilot Briefed on Emergency Commands", label:"CHECKED", req:true},
+    {id:"s17", q:"Geofence function check", desc:"Walk armed drone through geofence boundary to check function.", label:"CHECKED", req:true},
+  ]},
+  { key:"cond", name:"Conditions Check", items:[
+    {id:"c1", q:"Weather conditions within tolerance", label:"CHECKED", req:true},
+    {id:"c2", q:"Wind Speed (nearest m/s)", type:"scale", min:0, max:10, highLabel:"MAX LIMIT", req:false},
+    {id:"c3", q:"Visibility clear to >2km", label:"CHECKED", req:true},
+    {id:"c4", q:"ATC clearance granted (if required)", label:"CHECKED", req:false},
+    {id:"c5", q:"NATS NSF granted (if required)", label:"CHECKED", req:true},
+    {id:"c6", q:"NATS NSF granted (if required)", label:"CHECKED", req:true},
+    {id:"c7", q:"Record NSF CAD Number here. (if required)", type:"text", placeholder:"CAD number", def:"N/A", req:true},
+    {id:"c8", q:"Emergency contact numbers recorded and available", label:"CHECKED", req:true},
+  ]},
+  { key:"takeoff", name:"Take_Off Check", items:[
+    {id:"t1", q:"C2 link connected and stable", label:"CHECKED", req:true},
+    {id:"t2", q:"Testcard Light Check (rows/columns/batches)", label:"CHECKED", req:true},
+    {id:"t3", q:"GNSS positioning within limits + RTK lock achieved (K_Fix)", label:"CHECKED", req:true},
+    {id:"t4", q:"GPS_ALT_GROUND REF (has been set)", label:"CHECKED", req:true},
+    {id:"t5", q:"Timesync ON?", label:"CHECKED", req:true},
+    {id:"t6", q:"Battery Voltages are >80% (or >12.6V)", label:"CHECKED", req:true},
+    {id:"t7", q:"Baro Reading Correct", label:"CHECKED", req:true},
+    {id:"t8", q:"IMU Reading <0.5", label:"CHECKED", req:true},
+    {id:"t9", q:"XYZ Position Values Within Range", label:"CHECKED", req:true},
+    {id:"t10", q:"Velocity Value is near 0", label:"CHECKED", req:true},
+    {id:"t11", q:"Comms / radio check with ground team", label:"CHECKED", req:true},
+    {id:"t12", q:"Airspace visual check between pilots, observer + spotters", label:"CHECKED", req:true},
+    {id:"t13", q:"Safety buffer zone clear of unauthorised persons or vehicles", label:"CHECKED", req:true},
+    {id:"t14", q:"Wildlife Check (Birdstrike risk)", label:"CHECKED", req:true},
+  ]},
+];
+
+const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="#06210f" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg>';
+const LS_KEY = "skymagic_preflight_v1";
+const LS_PROJECT = "skymagic_preflight_project";
+
+/* ---- state ---- */
+let project = { show:"", observer:"", locked:false };   // sticky across flights
+let state = { details:{date:"",time:"",pilot:"",type:""}, checks:{} };
+const autoCollapsed = {};   // tracks which blocks were folded on completion
+let booted = false;
+
+/* ---- build all items ---- */
+const allItems = {};
+SECTIONS.forEach(s=>s.items.forEach(it=>{ allItems[it.id]=it; state.checks[it.id]=defaultVal(it); }));
+function defaultVal(it){
+  if(it.type==="radio") return it.def||"";
+  if(it.type==="scale") return null;
+  if(it.type==="text")  return it.def||"";
+  return false;
+}
+
+/* ---- render sections ---- */
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+const secWrap = document.getElementById("sections");
+
+SECTIONS.forEach(sec=>{
+  const block = el("div","block"); block.dataset.key=sec.key;
+  const head = el("div","secthead");
+  head.innerHTML = `<span class="name">${sec.name}</span><span class="pill" data-pill></span><span class="chev">▼</span>`;
+  head.addEventListener("click",()=>block.classList.toggle("collapsed"));
+  block.appendChild(head);
+
+  const body = el("div","secbody");
+  const ca = el("button","checkall","✓ Check all in section");
+  ca.addEventListener("click",()=>{
+    const items = sec.items.filter(i=>!i.type);
+    const allOn = items.every(i=>state.checks[i.id]);
+    items.forEach(i=>state.checks[i.id]=!allOn);
+    render(); save();
+  });
+
+  sec.items.forEach(it=>{
+    body.appendChild(buildItem(it));
+  });
+  body.appendChild(ca);
+  block.appendChild(body);
+  secWrap.appendChild(block);
+});
+
+function buildItem(it){
+  const card = el("div","item"); card.dataset.id=it.id;
+  const star = it.req ? '<span class="star">*</span>' : '<span class="opt">Optional</span>';
+  let inner = `<div class="q">${it.q}${star}</div>`;
+  if(it.desc) inner += `<div class="desc">${it.desc}</div>`;
+  card.innerHTML = inner;
+
+  if(!it.type){ /* checkbox */
+    card.classList.add("tappable");
+    const tog = el("div","toggle",`<div class="box">${TICK}</div><div class="toglabel">${it.label}</div>`);
+    card.appendChild(tog);
+    card.addEventListener("click",()=>{ state.checks[it.id]=!state.checks[it.id]; render(); save(); });
+  }
+  else if(it.type==="radio"){
+    const rs = el("div","radios");
+    it.options.forEach(opt=>{
+      const r = el("div","radio",`<div class="dot"></div><span>${opt}</span>`);
+      r.addEventListener("click",()=>{ state.checks[it.id]= state.checks[it.id]===opt?"":opt; render(); save(); });
+      r.dataset.opt=opt;
+      rs.appendChild(r);
+    });
+    card.appendChild(rs);
+  }
+  else if(it.type==="scale"){
+    const sw = el("div","scalewrap");
+    const btns = el("div","scalebtns");
+    for(let n=it.min;n<=it.max;n++){
+      const b = el("button","sb",n);
+      b.dataset.n=n;
+      b.addEventListener("click",()=>{ state.checks[it.id]= state.checks[it.id]===n?null:n; render(); save(); });
+      btns.appendChild(b);
+    }
+    sw.appendChild(btns);
+    sw.appendChild(el("div","scaleends",`<span>${it.min}</span><span>${it.highLabel||it.max}</span>`));
+    card.appendChild(sw);
+  }
+  else if(it.type==="text"){
+    const inp = el("input","tinput"); inp.type="text"; inp.placeholder=it.placeholder||"";
+    inp.addEventListener("input",()=>{ state.checks[it.id]=inp.value; updateProgress(); save(); });
+    inp.dataset.input="1";
+    card.appendChild(inp);
+  }
+  return card;
+}
+
+/* ---- project + flight details wiring ---- */
+const D = {
+  show:document.getElementById("f_show"), obs:document.getElementById("f_obs"),
+  date:document.getElementById("f_date"), time:document.getElementById("f_time"),
+  pilot:document.getElementById("f_pilot"), type:document.getElementById("f_type"),
+};
+/* project — sticky */
+D.show.addEventListener("input",()=>{project.show=D.show.value;saveProject();updateProgress();});
+D.obs.addEventListener("input",()=>{project.observer=D.obs.value;saveProject();});
+document.getElementById("projSet").addEventListener("click",()=>{
+  if(!project.show.trim()){
+    D.show.classList.add("miss"); D.show.focus();
+    setTimeout(()=>D.show.classList.remove("miss"),1600); return;
+  }
+  project.locked=true; saveProject(); renderProject(); updateProgress();
+  document.getElementById("projectBlock").classList.add("collapsed");
+  document.getElementById("detailsBlock").scrollIntoView({behavior:"smooth",block:"start"});
+});
+document.getElementById("projChange").addEventListener("click",()=>{
+  project.locked=false; renderProject();
+  document.getElementById("projectBlock").classList.remove("collapsed");
+});
+/* flight details — per flight */
+D.date.addEventListener("input",()=>{state.details.date=D.date.value;updateProgress();save();});
+D.time.addEventListener("input",()=>{state.details.time=D.time.value;updateProgress();save();});
+D.pilot.addEventListener("change",()=>{state.details.pilot=D.pilot.value;updateProgress();save();});
+[...D.type.children].forEach(b=>b.addEventListener("click",()=>{
+  state.details.type = state.details.type===b.dataset.v ? "" : b.dataset.v;
+  render(); save();
+}));
+document.querySelector('#projectBlock .secthead').addEventListener("click",()=>{
+  document.getElementById("projectBlock").classList.toggle("collapsed");
+});
+document.querySelector('#detailsBlock .secthead').addEventListener("click",()=>{
+  document.getElementById("detailsBlock").classList.toggle("collapsed");
+});
+
+/* ---- render ---- */
+function render(){
+  // checks
+  SECTIONS.forEach(sec=>{
+    sec.items.forEach(it=>{
+      const card = document.querySelector(`.item[data-id="${it.id}"]`);
+      const v = state.checks[it.id];
+      if(!it.type){ card.classList.toggle("on",!!v); }
+      else if(it.type==="radio"){
+        card.querySelectorAll(".radio").forEach(r=>r.classList.toggle("sel",r.dataset.opt===v));
+      }
+      else if(it.type==="scale"){
+        card.querySelectorAll(".sb").forEach(b=>b.classList.toggle("sel",Number(b.dataset.n)===v));
+      }
+      else if(it.type==="text"){
+        const inp=card.querySelector("input"); if(inp.value!==v) inp.value=v||"";
+      }
+    });
+  });
+  // project + flight details
+  renderProject();
+  if(D.date.value!==state.details.date) D.date.value=state.details.date;
+  if(D.time.value!==state.details.time) D.time.value=state.details.time;
+  if(D.pilot.value!==state.details.pilot) D.pilot.value=state.details.pilot;
+  [...D.type.children].forEach(b=>b.classList.toggle("sel",b.dataset.v===state.details.type));
+  updateProgress();
+}
+function renderProject(){
+  if(D.show.value!==project.show) D.show.value=project.show;
+  if(D.obs.value!==project.observer) D.obs.value=project.observer;
+  const locked=document.getElementById("projLocked");
+  const edit=document.getElementById("projEdit");
+  if(project.locked){
+    locked.style.display=""; edit.style.display="none";
+    const s=document.getElementById("pvShow"), o=document.getElementById("pvObs");
+    s.textContent=project.show||"—"; s.classList.toggle("empty",!project.show);
+    o.textContent=project.observer||"Not set"; o.classList.toggle("empty",!project.observer);
+  }else{
+    locked.style.display="none"; edit.style.display="";
+  }
+}
+
+/* ---- progress ---- */
+function detailsReqDone(){
+  const d=state.details;
+  return ["date","time","pilot","type"].filter(k=>String(d[k]||"").trim()).length;
+}
+function projectReqDone(){ return project.show.trim() ? 1 : 0; }
+function maybeAutoCollapse(block,complete,nextEl){
+  const id=block.id||block.dataset.key;
+  if(complete){
+    if(!autoCollapsed[id]){
+      autoCollapsed[id]=true;
+      block.classList.add("collapsed");
+      if(booted&&nextEl) setTimeout(()=>nextEl.scrollIntoView({behavior:"smooth",block:"start"}),140);
+    }
+  }else{
+    autoCollapsed[id]=false;
+  }
+}
+function itemDone(it){
+  const v=state.checks[it.id];
+  if(!it.type) return !!v;
+  if(it.type==="radio") return !!v;
+  if(it.type==="scale") return v!==null && v!==undefined;
+  if(it.type==="text") return String(v||"").trim()!=="";
+  return false;
+}
+function updateProgress(){
+  const dDone=detailsReqDone();
+  const pDone=projectReqDone();
+  setPill(document.getElementById("detPill"),dDone,4);
+  setProjPill(pDone);
+  maybeAutoCollapse(document.getElementById("detailsBlock"),dDone===4,secWrap.children[0]);
+  let reqTotal=5, reqDone=dDone+pDone;
+  SECTIONS.forEach((sec,i)=>{
+    const block=secWrap.children[i];
+    const reqItems=sec.items.filter(it=>it.req);
+    const doneItems=reqItems.filter(itemDone).length;
+    setPill(block.querySelector("[data-pill]"),doneItems,reqItems.length);
+    maybeAutoCollapse(block, reqItems.length>0 && doneItems===reqItems.length, secWrap.children[i+1]);
+    reqTotal+=reqItems.length; reqDone+=doneItems;
+  });
+  const pct=Math.round(reqDone/reqTotal*100);
+  document.getElementById("progBar").style.width=pct+"%";
+  const ready=reqDone===reqTotal;
+  const st=document.getElementById("status");
+  st.innerHTML = ready
+    ? `<b>All ${reqTotal} required checks complete</b>`
+    : `<b>${reqDone} / ${reqTotal}</b> required checks complete`;
+  const btn=document.getElementById("submitBtn");
+  btn.classList.toggle("ready",ready);
+  document.querySelector(".footer .inner").parentElement.classList.toggle("ready",ready);
+  btn.textContent = ready ? "▸ Submit Pre-Flight" : "Submit Pre-Flight";
+}
+function setPill(elm,done,total){
+  if(!elm)return;
+  elm.textContent=`${done} / ${total}`;
+  elm.classList.toggle("done",done===total && total>0);
+}
+function setProjPill(done){
+  const p=document.getElementById("projPill");
+  if(done){ p.textContent="✓ SET"; p.classList.add("done"); p.classList.remove("req"); }
+  else{ p.textContent="SET REQUIRED"; p.classList.add("req"); p.classList.remove("done"); }
+}
+
+/* ---- persistence (works on GitHub Pages; no-ops if storage blocked) ---- */
+function save(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){ const s=JSON.parse(raw);
+      if(s.details) Object.assign(state.details,s.details);
+      if(s.checks) Object.keys(state.checks).forEach(k=>{ if(k in s.checks) state.checks[k]=s.checks[k]; });
+    }
+  }catch(e){}
+}
+function saveProject(){ try{ localStorage.setItem(LS_PROJECT,JSON.stringify(project)); }catch(e){} }
+function loadProject(){
+  try{ const raw=localStorage.getItem(LS_PROJECT); if(raw) Object.assign(project,JSON.parse(raw)); }catch(e){}
+}
+function freshDefaults(){
+  const now=new Date();
+  if(!state.details.date) state.details.date=now.toISOString().slice(0,10);
+  if(!state.details.time) state.details.time=now.toTimeString().slice(0,5);
+  if(!state.details.pilot) state.details.pilot="Hamkah";
+}
+function resetFlight(){
+  const pilot=state.details.pilot;
+  state={details:{date:"",time:"",pilot:pilot,type:""},checks:{}};
+  SECTIONS.forEach(s=>s.items.forEach(it=>state.checks[it.id]=defaultVal(it)));
+  Object.keys(autoCollapsed).forEach(k=>delete autoCollapsed[k]);
+  document.getElementById("detailsBlock").classList.remove("collapsed");
+  [...secWrap.children].forEach(b=>b.classList.remove("collapsed"));
+  freshDefaults(); save(); render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---- new flight ---- */
+document.getElementById("newBtn").addEventListener("click",()=>{
+  showModal(`
+    <div class="circle warn">${warnSvg()}</div>
+    <div class="big">Start New Flight?</div>
+    <p>Clears all checks and flight details for a fresh pre-flight. Project (show / observer) and pilot are kept.</p>
+    <button class="mbtn" id="mConfirm">Yes — Clear &amp; Restart</button>
+    <button class="mbtn ghost" id="mCancel">Cancel</button>
+  `);
+  document.getElementById("mConfirm").onclick=()=>{ resetFlight(); hideModal(); };
+  document.getElementById("mCancel").onclick=hideModal;
+});
+
+/* ---- submit ---- */
+document.getElementById("submitBtn").addEventListener("click",()=>{
+  if(!document.getElementById("submitBtn").classList.contains("ready")){
+    flashIncomplete(); return;
+  }
+  const configured = !JSON.stringify(ENTRY).includes("PENDING");
+  if(!configured){ showSetupNotice(); return; }
+  doSubmit();
+});
+
+function flashIncomplete(){
+  // project — show name required
+  if(projectReqDone()<1){
+    const pb=document.getElementById("projectBlock");
+    pb.classList.remove("collapsed");
+    if(project.locked){ project.locked=false; renderProject(); }
+    D.show.classList.add("miss");
+    pb.scrollIntoView({behavior:"smooth",block:"start"});
+    setTimeout(()=>D.show.classList.remove("miss"),2000);
+    return;
+  }
+  // flight details
+  if(detailsReqDone()<4){
+    document.getElementById("detailsBlock").classList.remove("collapsed");
+    ["date","time","pilot","type"].forEach(k=>{
+      if(!String(state.details[k]||"").trim()){
+        (k==="type"?D.type:D[k]).classList.add("miss");
+      }
+    });
+    document.getElementById("detailsBlock").scrollIntoView({behavior:"smooth",block:"start"});
+    setTimeout(()=>{["date","time","pilot"].forEach(k=>D[k].classList.remove("miss"));},2000);
+    return;
+  }
+  for(let i=0;i<SECTIONS.length;i++){
+    const miss=SECTIONS[i].items.find(it=>it.req&&!itemDone(it));
+    if(miss){
+      secWrap.children[i].classList.remove("collapsed");
+      const card=document.querySelector(`.item[data-id="${miss.id}"]`);
+      card.scrollIntoView({behavior:"smooth",block:"center"});
+      card.style.transition="box-shadow .2s";
+      card.style.boxShadow="0 0 0 2px var(--red)";
+      setTimeout(()=>card.style.boxShadow="",1400);
+      return;
+    }
+  }
+}
+
+function showSetupNotice(){
+  showModal(`
+    <div class="circle warn">${warnSvg()}</div>
+    <div class="big">Checklist Complete</div>
+    <p>All required checks pass. Live submission to the Google Sheet isn't wired up yet — the form's entry IDs need to be added once (a 2-minute setup).</p>
+    <div class="summary">${buildSummaryHTML()}</div>
+    <button class="mbtn ghost" id="mClose">Close</button>
+  `);
+  document.getElementById("mClose").onclick=hideModal;
+}
+
+function doSubmit(){
+  // real form POST into a reused tab — so Google's own confirmation page is visible
+  const f=document.createElement("form");
+  f.method="POST"; f.action=FORM_ACTION; f.target="skymagic_confirm"; f.style.display="none";
+  const add=(n,v)=>{ const i=document.createElement("input"); i.type="hidden"; i.name=n; i.value=v; f.appendChild(i); };
+  add(ENTRY.show, project.show);
+  const d=new Date(state.details.date+"T00:00");
+  add(ENTRY.date+"_year",d.getFullYear());
+  add(ENTRY.date+"_month",d.getMonth()+1);
+  add(ENTRY.date+"_day",d.getDate());
+  const [hh,mm]=state.details.time.split(":");
+  add(ENTRY.time+"_hour",hh); add(ENTRY.time+"_minute",mm);
+  add(ENTRY.pilot,state.details.pilot);
+  if(project.observer) add(ENTRY.observer,project.observer);
+  add(ENTRY.flightType,state.details.type);
+  SECTIONS.forEach(sec=>sec.items.forEach(it=>{
+    const v=state.checks[it.id], e=ENTRY[it.id]; if(!e) return;
+    if(!it.type){ if(v) add(e,it.label); }
+    else if(it.type==="radio"){ if(v) add(e,v); }
+    else if(it.type==="scale"){ if(v!==null&&v!==undefined) add(e,String(v)); }
+    else if(it.type==="text"){ if(String(v||"").trim()) add(e,v); }
+  }));
+  add("fvv","1"); add("pageHistory","0,1,2,3");
+  document.body.appendChild(f);
+  f.submit();          // synchronous — stays inside the click gesture
+  f.remove();
+  submitDone();
+}
+function submitDone(){
+  showModal(`
+    <div class="circle">${TICK.replace('width="17"','width="34"').replace('height="17"','height="34"').replace(/#06210f/g,'#34d977')}</div>
+    <div class="big">Pre-Flight Submitted</div>
+    <p>${esc(project.show)||"—"} · ${esc(state.details.type)||""}</p>
+    <p style="color:var(--go);font-weight:600">A confirmation tab opened — Google should show “Your response has been recorded.”</p>
+    <div class="summary">${buildSummaryHTML()}</div>
+    <button class="mbtn" id="mNew">Start New Flight</button>
+  `);
+  document.getElementById("mNew").onclick=()=>{ resetFlight(); hideModal(); };
+}
+
+function buildSummaryHTML(){
+  const d=state.details;
+  let h=`<div><b>Show:</b> ${esc(project.show)||"—"}</div>
+         <div><b>Date / Time:</b> ${esc(d.date)} ${esc(d.time)}</div>
+         <div><b>PIC:</b> ${esc(d.pilot)||"—"}${project.observer?" · Obs: "+esc(project.observer):""}</div>
+         <div><b>Type:</b> ${esc(d.type)||"—"}</div>`;
+  SECTIONS.forEach(sec=>{
+    const done=sec.items.filter(itemDone).length;
+    h+=`<div style="margin-top:6px"><b>${sec.name}:</b> ${done}/${sec.items.length}</div>`;
+  });
+  const wind=state.checks.c2;
+  if(wind!==null&&wind!==undefined) h+=`<div><b>Wind:</b> ${wind} m/s</div>`;
+  if(state.checks.s7) h+=`<div><b>Primary Geofence:</b> ${esc(state.checks.s7)}</div>`;
+  return h;
+}
+function esc(s){return String(s==null?"":s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));}
+
+/* ---- modal ---- */
+function showModal(html){ const m=document.getElementById("modal"); m.innerHTML=html; document.getElementById("overlay").classList.add("show"); }
+function hideModal(){ document.getElementById("overlay").classList.remove("show"); }
+function warnSvg(){return '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#f0a93b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v5M12 17.5v.5"/><path d="M10.3 3.8L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/></svg>';}
+
+/* ---- init ---- */
+loadProject(); load(); freshDefaults(); render();
+if(project.locked) document.getElementById("projectBlock").classList.add("collapsed");
+booted=true;
+</script>
+</body>
+</html>
